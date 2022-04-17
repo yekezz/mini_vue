@@ -1,12 +1,4 @@
-class ReactiveEffect {
-  public effect: any
-  constructor(fn: any) {
-    this.effect = fn
-  }
-  public run() {
-    this.effect()
-  }
-}
+
 
 const targetMap = new WeakMap
 export function track(target: any, key: any) {
@@ -28,14 +20,29 @@ export function triger(target: any, key: any) {
   const depsMap = targetMap.get(target)
   const depsSet = depsMap.get(key)
   for (const effect of depsSet) {
-    effect.run()
+    if(effect.scheduler) {
+      effect.scheduler()
+    } else {
+      effect.run()
+    }
   }
 }
 
 let activeEffect: any;
-export function effect(fn: any) {
-  const _effect = new ReactiveEffect(fn)
+export function effect(fn: any, options: any = {}) {
+  const { scheduler } = options
+  const _effect = new ReactiveEffect(fn, scheduler)
   activeEffect = _effect
   _effect.run()
   activeEffect = null
+
+  return _effect.run.bind(_effect)
+}
+
+class ReactiveEffect {
+  constructor(private _fn: any,public scheduler: any) {
+  }
+  public run() {
+    return this._fn()
+  }
 }
