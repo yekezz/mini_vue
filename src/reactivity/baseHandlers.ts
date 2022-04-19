@@ -1,4 +1,5 @@
 import { track, triger } from ".";
+import { ReaciveFlags } from "./reactive";
 
 const get = createGetter();
 const set = createSetter();
@@ -7,6 +8,12 @@ const readonlyGet = createGetter(true);
 function createGetter(isReadonly = false) {
   return function (target: any, key: any, receiver: any) {
     const res = Reflect.get(target, key, receiver);
+    if (key === ReaciveFlags.IS_REACTIVE) {
+      return !isReadonly
+    } else if (key === ReaciveFlags.IS_READONLY) {
+      return isReadonly
+    }
+
     if (!isReadonly) {
       track(target, key); // 触发订阅
     }

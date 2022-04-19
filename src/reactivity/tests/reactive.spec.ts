@@ -1,4 +1,4 @@
-import { reactive } from '../reactive'
+import { isReactive, reactive } from '../reactive'
 
 describe('reactive', () => {
   it('reactive', () => {
@@ -8,6 +8,8 @@ describe('reactive', () => {
     const objRec = reactive(obj);
     expect(objRec.foo).toBe('foo');
     expect(obj).not.toBe(objRec);
+    expect(isReactive(objRec)).toBe(true);
+    expect(isReactive(obj)).toBe(false);
   });
 });
 
