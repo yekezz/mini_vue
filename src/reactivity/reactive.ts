@@ -1,16 +1,13 @@
-import { track, triger } from './index'
+import { mutableHandlers, readonlyHandlers } from './baseHandlers';
 
 export function reactive(obj: any) {
-  return new Proxy(obj, {
-    get(target, key, receiver) {
-      const res = Reflect.get(target, key ,receiver);
-      track(target, key); // 触发订阅
-      return res
-    },
-    set(target, key, value ,receiver) {
-      const res = Reflect.set(target, key, value, receiver);
-      triger(target, key); // 触发订阅
-      return res
-    }
-  })
+  return createActiveObject(obj, mutableHandlers)
+}
+
+export function readonly(obj: any) {
+  return createActiveObject(obj, readonlyHandlers)
+}
+
+function createActiveObject(obj: any, baseHandlers: any) {
+  return new Proxy(obj, baseHandlers)
 }
