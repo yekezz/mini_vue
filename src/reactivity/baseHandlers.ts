@@ -1,12 +1,14 @@
 import { track, triger } from ".";
-import { isObject } from "../shared";
+import { extend, isObject } from "../shared";
 import { ReaciveFlags, reactive, readonly } from "./reactive";
 
 const get = createGetter();
 const set = createSetter();
 const readonlyGet = createGetter(true);
+const shallowReactiveGet = createGetter(false, true);
+const shallowReadonlyGet = createGetter(true, true);
 
-function createGetter(isReadonly = false) {
+function createGetter(isReadonly = false, isShallow = false) {
   return function (target: any, key: any, receiver: any) {
     const res = Reflect.get(target, key, receiver);
     if (key === ReaciveFlags.IS_REACTIVE) {
@@ -18,8 +20,12 @@ function createGetter(isReadonly = false) {
     if (!isReadonly) {
       track(target, key); // 触发订阅
     }
-    
-    if(isObject(res)) {
+
+    if (isShallow) {
+      return res
+    }
+
+    if (isObject(res)) {
       return isReadonly ? readonly(res) : reactive(res)
     }
 
@@ -47,3 +53,11 @@ export const readonlyHandlers = {
     return true
   }
 }
+
+export const shallowReactiveHandlers = extend({}, mutableHandlers, {
+  get: shallowReactiveGet
+})
+
+export const shallowReadonlyHandlers = extend({}, readonlyHandlers, {
+  get: shallowReadonlyGet
+})
