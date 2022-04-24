@@ -14,6 +14,7 @@ export function track(target: any, key: any) {
     depsSet = new Set
     depsMap.set(key, depsSet)
   }
+  if (depsSet.has(activeEffect)) return
   depsSet.add(activeEffect)
   activeEffect.deps.push(depsSet)
 }

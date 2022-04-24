@@ -1,3 +1,4 @@
+import { effect } from '..';
 import { isReactive, reactive } from '../reactive'
 
 describe('reactive', () => {
@@ -11,5 +12,24 @@ describe('reactive', () => {
     expect(isReactive(objRec)).toBe(true);
     expect(isReactive(obj)).toBe(false);
   });
+
+  it('nested reactive', () => {
+    const obj = {
+      a: { b: 1 },
+      c: [{ d: 2 }]
+    }
+    const objRec = reactive(obj);
+    let total
+    effect(() => {
+      total = objRec.a
+    })
+    expect(isReactive(objRec.a)).toBe(true);
+    expect(isReactive(objRec.c)).toBe(true);
+    expect(isReactive(objRec.c[0])).toBe(true);
+
+    objRec.a = 3
+    expect(total).toBe(3)
+  });
+
 });
 

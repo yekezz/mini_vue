@@ -1,5 +1,6 @@
 import { track, triger } from ".";
-import { ReaciveFlags } from "./reactive";
+import { isObject } from "../shared";
+import { ReaciveFlags, reactive, readonly } from "./reactive";
 
 const get = createGetter();
 const set = createSetter();
@@ -17,6 +18,11 @@ function createGetter(isReadonly = false) {
     if (!isReadonly) {
       track(target, key); // 触发订阅
     }
+    
+    if(isObject(res)) {
+      return isReadonly ? readonly(res) : reactive(res)
+    }
+
     return res
   }
 }
@@ -35,7 +41,7 @@ export const mutableHandlers = {
 }
 
 export const readonlyHandlers = {
-  get,
+  get: readonlyGet,
   set(target: any, key: any, value: any, receiver: any) {
     console.warn(`Set ${key} failed, it's readonly`, target);
     return true
