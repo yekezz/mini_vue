@@ -1,5 +1,5 @@
 import { effect } from '..';
-import { isReactive, reactive } from '../reactive'
+import { isProxy, isReactive, reactive } from '../reactive'
 
 describe('reactive', () => {
   it('reactive', () => {
@@ -11,6 +11,8 @@ describe('reactive', () => {
     expect(obj).not.toBe(objRec);
     expect(isReactive(objRec)).toBe(true);
     expect(isReactive(obj)).toBe(false);
+    expect(isProxy(objRec)).toBe(true);
+    expect(isProxy(obj)).toBe(false);
   });
 
   it('nested reactive', () => {
