@@ -3,7 +3,7 @@ import { extend } from "../shared"
 
 const targetMap = new WeakMap
 export function track(target: any, key: any) {
-  if (!activeEffect) return
+  if (!isTracking()) return
   let depsMap = targetMap.get(target)
   if (!depsMap) {
     depsMap = new Map
@@ -14,6 +14,14 @@ export function track(target: any, key: any) {
     depsSet = new Set
     depsMap.set(key, depsSet)
   }
+  trackEffect(depsSet)
+}
+
+export function isTracking() {
+  return !!activeEffect
+}
+
+export function trackEffect(depsSet: any) {
   if (depsSet.has(activeEffect)) return
   depsSet.add(activeEffect)
   activeEffect.deps.push(depsSet)
@@ -22,6 +30,10 @@ export function track(target: any, key: any) {
 export function triger(target: any, key: any) {
   const depsMap = targetMap.get(target)
   const depsSet = depsMap.get(key)
+  trigerEffects(depsSet)
+}
+
+export function trigerEffects(depsSet: any) {
   for (const effect of depsSet) {
     if (effect.scheduler) {
       effect.scheduler()
