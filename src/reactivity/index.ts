@@ -48,24 +48,28 @@ export function effect(fn: any, options: any = {}) {
   const { scheduler } = options
   const _effect = new ReactiveEffect(fn, scheduler)
   extend(_effect, options)
-  activeEffect = _effect
   _effect.run()
-  activeEffect = null
   const runner: any = _effect.run.bind(_effect)
   runner.effect = _effect
   return runner
 }
 
-class ReactiveEffect {
+export class ReactiveEffect {
   public deps = []
   private active = false
   private onStop?: () => void
 
-  constructor(private _fn: any, public scheduler: any) {
+  constructor(private _fn: any, public scheduler?: any) {
   }
 
   public run() {
-    return this._fn()
+    if (this.active) {
+      return this._fn()
+    }
+    activeEffect = this
+    const result = this._fn()
+    activeEffect = null
+    return result
   }
 
   public stop() {
