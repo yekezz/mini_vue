@@ -1,3 +1,4 @@
+import { ShapeFlags } from '../shared/shapeFlags';
 import { createComponentInstance, setupComponent } from './component';
 
 export function render(vnode: any, container: any) {
@@ -6,24 +7,24 @@ export function render(vnode: any, container: any) {
 }
 
 function patch(vnode: any, container: any) {
-  if (typeof vnode.type === 'string') {
+  if (vnode.shapeFlag & ShapeFlags.ELEMENT) {
     processElement(vnode, container)
-  } else if (typeof vnode.type === 'object') {
+  } else if (vnode.shapeFlag & ShapeFlags.STATEFUL_COMPONENT) {
     processComponent(vnode, container);
   }
 }
 
 function processElement(vnode: any, container: any) {
   // type
-  const el = vnode.el = document.createElement(vnode.type);
+  const el = vnode.$el = document.createElement(vnode.type);
   // props
   for (let key in vnode.props) {
     el.setAttribute(key, vnode.props[key]);
   }
   // children
-  if (typeof vnode.children === 'string') {
+  if (vnode.shapeFlag & ShapeFlags.TEXT_CHILDREN) {
     el.innerText = vnode.children;
-  } else if (typeof vnode.children === 'object') {
+  } else if (vnode.shapeFlag & ShapeFlags.ARRAY_CHILDREN) {
     mountChildren(vnode, el)
   }
   // append
@@ -50,5 +51,6 @@ function setupRenderEffect(instance: any, container: any) {
   const subTree = instance.render.call(instance.proxy);
   patch(subTree, container);
 
-  instance.vnode.el = subTree.el;
+  // 最终是要给rootcomponet实例上添加el
+  instance.$el = subTree.$el;
 }
