@@ -8,7 +8,10 @@ export const App = {
     window.self = this
     return h('div', {
       id: 'main',
-      class: ['blue']
+      class: ['blue'],
+      onClick() {
+        console.log('click')
+      }
     }, [
       h('span', {
         id: 'text',

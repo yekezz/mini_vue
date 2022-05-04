@@ -1,3 +1,4 @@
+import { isOn } from '../shared/index';
 import { ShapeFlags } from '../shared/shapeFlags';
 import { createComponentInstance, setupComponent } from './component';
 
@@ -18,8 +19,15 @@ function processElement(vnode: any, container: any) {
   // type
   const el = vnode.$el = document.createElement(vnode.type);
   // props
-  for (let key in vnode.props) {
-    el.setAttribute(key, vnode.props[key]);
+  const { props } = vnode
+  for (let key in props) {
+    const val = props[key];
+    if (isOn(key)) {
+      const event = key.slice(2).toLocaleLowerCase()
+      el.addEventListener(event, val)
+    } else {
+      el.setAttribute(key, val);
+    }
   }
   // children
   if (vnode.shapeFlag & ShapeFlags.TEXT_CHILDREN) {
