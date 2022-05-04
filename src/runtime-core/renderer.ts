@@ -15,7 +15,7 @@ function patch(vnode: any, container: any) {
 
 function processElement(vnode: any, container: any) {
   // type
-  const el = document.createElement(vnode.type);
+  const el = vnode.el = document.createElement(vnode.type);
   // props
   for (let key in vnode.props) {
     el.setAttribute(key, vnode.props[key]);
@@ -40,13 +40,15 @@ function processComponent(vnode: any, container: any) {
   mountComponent(vnode, container);
 }
 
-function mountComponent(vnode: any, container: any) {
-  const instance = createComponentInstance(vnode);
+function mountComponent(initinalVNode: any, container: any) {
+  const instance = createComponentInstance(initinalVNode);
   setupComponent(instance);
   setupRenderEffect(instance, container);
 }
 
 function setupRenderEffect(instance: any, container: any) {
-  const subTree = instance.render();
+  const subTree = instance.render.call(instance.proxy);
   patch(subTree, container);
+
+  instance.vnode.el = subTree.el;
 }

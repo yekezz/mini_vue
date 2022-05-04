@@ -2,8 +2,10 @@ import {
   h
 } from '../../lib/mini_vue.esm.js';
 // component
+window.self = null
 export const App = {
   render() {
+    window.self = this
     return h('div', {
       id: 'main',
       class: ['blue']
@@ -11,7 +13,7 @@ export const App = {
       h('span', {
         id: 'text',
         class: ['yellow']
-      }, '我是spannnn!'),
+      }, this.msg),
       h('span', {
         id: 'text',
         class: ['red']
