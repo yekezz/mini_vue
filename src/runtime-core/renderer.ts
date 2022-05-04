@@ -6,7 +6,34 @@ export function render(vnode: any, container: any) {
 }
 
 function patch(vnode: any, container: any) {
-  processComponent(vnode, container);
+  if (typeof vnode.type === 'string') {
+    processElement(vnode, container)
+  } else if (typeof vnode.type === 'object') {
+    processComponent(vnode, container);
+  }
+}
+
+function processElement(vnode: any, container: any) {
+  // type
+  const el = document.createElement(vnode.type);
+  // props
+  for (let key in vnode.props) {
+    el.setAttribute(key, vnode.props[key]);
+  }
+  // children
+  if (typeof vnode.children === 'string') {
+    el.innerText = vnode.children;
+  } else if (typeof vnode.children === 'object') {
+    mountChildren(vnode, el)
+  }
+  // append
+  container.appendChild(el);
+}
+
+function mountChildren(vnode: any, el: any) {
+  for (let i = 0; i < vnode.children.length; i++) {
+    processElement(vnode.children[i], el);
+  }
 }
 
 function processComponent(vnode: any, container: any) {

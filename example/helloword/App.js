@@ -4,7 +4,19 @@ import {
 // component
 export const App = {
   render() {
-    return h('div', 'Hello World!');
+    return h('div', {
+      id: 'main',
+      class: ['blue']
+    }, [
+      h('span', {
+        id: 'text',
+        class: ['yellow']
+      }, '我是spannnn!'),
+      h('span', {
+        id: 'text',
+        class: ['red']
+      }, '我是span!')
+    ]);
   },
   setup() {
     return {
