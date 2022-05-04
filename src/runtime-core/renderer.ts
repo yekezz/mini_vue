@@ -41,7 +41,7 @@ function processElement(vnode: any, container: any) {
 
 function mountChildren(vnode: any, el: any) {
   for (let i = 0; i < vnode.children.length; i++) {
-    processElement(vnode.children[i], el);
+    patch(vnode.children[i], el);
   }
 }
 

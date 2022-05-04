@@ -1,6 +1,8 @@
 import {
   h
 } from '../../lib/mini_vue.esm.js';
+
+import Foo from './Foo.js';
 // component
 window.self = null
 export const App = {
@@ -20,7 +22,10 @@ export const App = {
       h('span', {
         id: 'text',
         class: ['red']
-      }, '我是span!')
+      }, '我是span!'),
+      h(Foo, {
+        count: 1
+      })
     ]);
   },
   setup() {
